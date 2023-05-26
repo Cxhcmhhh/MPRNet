@@ -51,7 +51,7 @@ if len(files) == 0:
 # Load corresponding model architecture and weights
 load_file = run_path(os.path.join(task, "MPRNet.py"))
 model = load_file['MPRNet']()
-model.cpu()
+model.cuda()
 
 weights = os.path.join(task, "pretrained_models", "model_"+task.lower()+".pth")
 load_checkpoint(model, weights)
@@ -61,7 +61,7 @@ img_multiple_of = 8
 
 for file_ in files:
     img = Image.open(file_).convert('RGB')
-    input_ = TF.to_tensor(img).unsqueeze(0).cpu()
+    input_ = TF.to_tensor(img).unsqueeze(0).cuda()
 
     # Pad the input if not_multiple_of 8
     h,w = input_.shape[2], input_.shape[3]
@@ -78,7 +78,7 @@ for file_ in files:
     # Unpad the output
     restored = restored[:,:,:h,:w]
 
-    restored = restored.permute(0, 2, 3, 1).cpu().detach().numpy()
+    restored = restored.permute(0, 2, 3, 1).cuda().detach().numpy()
     restored = img_as_ubyte(restored[0])
 
     f = os.path.splitext(os.path.split(file_)[-1])[0]
